@@ -32,26 +32,57 @@ import InLineMessege from "./InlineErrorMessege";
 //         name:"RAve"
 //     }
 // ]
+var initalData={
+    id:null,
+    title:'',
+    description:"",
+    price:0,
+    time:0,
+    player:0,
+    featured:false,
+    publisher:0,
+    image:""
+};
 
 class GameForm extends React.Component{
     state={
-        data:{
-            name:'',
-            description:"",
-            price:0,
-            duration:0,
-            player:0,
-            featured:false,
-            publisher:0,
-            image:""
-        },
-        err:{
-            name:"Cannot be Empty"
-        }        
+        data:initalData,
+        err:{}        
+    }
+    componentDidMount(){
+        if(this.props.selectedGame.title)
+        this.setState({data: this.props.selectedGame});
+        else
+        this.setState({data:initalData});
+        //console.log(this.state);
+    }
+    componentWillReceiveProps(newProps){
+        if(newProps.selectedGame._id&&this.state.data._id!=newProps.selectedGame._id)
+        this.setState({data:newProps.selectedGame});
+        else
+        this.setState({data:initalData});
+    }
+    validate = data =>{
+        var error={};
+        if(!data.title) error.name="Cannot be Empty";
+        if(!data.description) error.description="Cannot be Empty";
+        if(!data.image) error.image="Cannot be Empty";
+        if(data.time<=0) error.time="Too short! Isn't it?";
+        if(data.price<0) error.price="Too cheap! Isn't it?";
+        if(data.player<=0) error.player="Too less players! Isn't it?";
+        if(data.publisher==0) error.publisher="Select AnyOne";
+
+        return error;
     }
     EventHandler = e =>{
         e.preventDefault();
-        console.log(this.state)
+        const err=this.validate(this.state.data);
+        this.setState({err})
+        if(Object.keys(err).length===0){
+            //console.log(this.state.data);
+            this.props.submit(this.state.data);
+        }
+        //console.log(this.state);
     }
 
     EventChange = e =>{
@@ -89,20 +120,20 @@ class GameForm extends React.Component{
             <form className="ui form" onSubmit={this.EventHandler}>
                 <div className="ui grid">
                     <div className="twelve wide column">
-                                    <div className={err.name===""?("field"):("error field")}>
+                                    <div className={err.name===""|| err.name===undefined?("field"):("error field")}>
                                         <label htmlFor="name">Full Game Name</label>
                                         <input 
                                             type="text" 
                                             placeholder="Full Game Name" 
-                                            name="name" 
+                                            name="title" 
                                             id="name"
-                                            value={ data.name }
+                                            value={ data.title }
                                             onChange={ this.EventChange }>
 
                                         </input>
                                         <InLineMessege content={err.name} type="error"/>
                                     </div>
-                                    <div className="field">
+                                    <div className={err.description===""|| err.description===undefined?("field"):("error field")}>
                                         <label htmlFor="description">Full Game Name</label>
                                         <textarea 
                                             type="text" 
@@ -111,8 +142,8 @@ class GameForm extends React.Component{
                                             id="description"
                                             value={ this.state.data.description }
                                             onChange={ this.EventChange }>
-
                                         </textarea>
+                                        <InLineMessege content={err.description} type="error"/>
                                 </div>
 
                     </div>
@@ -127,7 +158,7 @@ class GameForm extends React.Component{
 
                 </div>
 
-                <div className="field">
+                <div className={err.image===""|| err.image===undefined?"field":"error field"}>
                                         <label htmlFor="name">Thumnails</label>
                                         <input 
                                             type="text" 
@@ -138,10 +169,11 @@ class GameForm extends React.Component{
                                             onChange={ this.EventChange }>
 
                                         </input>
+                                        <InLineMessege content={err.image} type="error"/>
                                     </div>
                 
                 <div className="three fields">
-                    <div className="field">
+                    <div className={err.price===""|| err.price===undefined?"field":"error field"}>
                         <label htmlFor="price">Price</label>
                         <input 
                             type="number" 
@@ -152,20 +184,21 @@ class GameForm extends React.Component{
                             onChange={ this.EventNumberChange }>
 
                         </input>
+                        <InLineMessege content={err.price} type="error"/>
                     </div>
-                    <div className="field">
-                        <label htmlFor="duration">Duration</label>
+                    <div className={err.time===""|| err.time===undefined?"field":"error field"}>
+                        <label htmlFor="time">time</label>
                         <input 
                             type="number" 
-                            placeholder="Duration" 
-                            name="duration" 
-                            id="duration"
-                            value={ this.state.data.duration }
+                            placeholder="time" 
+                            name="time" 
+                            id="time"
+                            value={ this.state.data.time }
                             onChange={ this.EventNumberChange }>
-
                         </input>
+                        <InLineMessege content={err.time} type="error"/>
                     </div>
-                    <div className="field">
+                    <div className={err.player===""|| err.player===undefined?"field":"error field"}>
                         <label htmlFor="players">Playes</label>
                         <input 
                             type="number" 
@@ -175,7 +208,8 @@ class GameForm extends React.Component{
                             value={ this.state.data.player }
                             onChange={ this.EventNumberChange }>
 
-                        </input>                  
+                        </input>
+                        <InLineMessege content={err.player} type="error"/>                  
                     </div>
                 </div>
                 {/* <div className="inline field">
@@ -225,7 +259,7 @@ class GameForm extends React.Component{
                     }
 
                 </div> */}
-                <div className="field">
+                <div className={err.publisher===""|| err.publisher===undefined?"field":"error field"}>
                     <label>Publishers</label>
                     <select
                         name="publisher"
@@ -241,6 +275,7 @@ class GameForm extends React.Component{
 
 
                     </select>
+                    <InLineMessege content={err.publisher} type="error"/>
 
                 </div>
                 <div className="ui fluid buttons">
@@ -248,7 +283,6 @@ class GameForm extends React.Component{
                     <div className="or"></div>
                     <button type="submit" className="ui button" onClick={this.props.hide}> Cancel! </button>
                 </div>
-                
             </form>
         )
     }
@@ -257,7 +291,9 @@ GameForm.propTypes={
     publishers:PropTypes.arrayOf(PropTypes.shape({
         _id:PropTypes.number.isRequired,
         name:PropTypes.string.isRequired
-    })).isRequired
+    })).isRequired,
+    submit:PropTypes.func.isRequired,
+    selectedGame:PropTypes.object.isRequired
 } 
 GameForm.defaultProps={
     publishers:[]

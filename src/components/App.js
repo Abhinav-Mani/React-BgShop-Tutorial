@@ -59,7 +59,8 @@ class App extends React.Component{
     // }
     state={
         games:[],
-        showForm: false
+        showForm: false,
+        selectedGame:{}
     }
     componentDidMount(){
         this.setState({games:this.arr(games)});
@@ -85,18 +86,55 @@ class App extends React.Component{
         //alert(gameId);
     }
     showForm=()=>{
-        this.setState({showForm: true});
+        this.setState({showForm: true,selectedGame:{}});
+        //console.log(this.state.selectedGame);
     }
     hideForm=()=>{
-        this.setState({showForm: false});
+        this.setState({showForm: false,selectedGame:{}});
+    }
+    submit= data =>{
+        if(!data._id)
+        this.addData(data);
+        else
+        this.update(data);
+        
+    }
+    update=data=>{
+        this.setState({games: this.state.games.map(item=> item._id===data._id?data:item),showForm:false});
+    }
+    deleteGame= data =>{
+        this.setState({games: this.state.games.filter(item => item._id!==data._id)})
+    }
+    addData= data =>{
+        this.setState({
+            games:this.arr([...this.state.games,{...data,_id:this.state.games.length+1}]),
+            showForm: false
+        });
+    }
+    selectGameFoeEdit = game =>{
+        this.setState({
+            showForm: true,
+            selectedGame: game
+            
+        }
+        )
     }
     render(){
         return(
             <div className="ui container" >
-                <NavBar show={this.showForm}/>
-                {this.state.showForm && <GameForm publishers={publishers} hide={this.hideForm}/>}
+                <NavBar show={this.showForm}/> 
+                {this.state.showForm && <GameForm 
+                                            publishers={publishers} 
+                                            hide={this.hideForm}
+                                            submit={this.submit}
+                                            selectedGame={this.state.selectedGame}
+                                            />}
                 <br/>
-                <GameList games= {this.state.games} tog={this.tog} />
+                <GameList 
+                games= {this.state.games} 
+                tog={this.tog}  
+                editGame={this.selectGameFoeEdit}
+                deleteGame={this.deleteGame}/>
             </div>
         )
     }
