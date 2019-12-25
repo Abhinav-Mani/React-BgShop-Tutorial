@@ -62,12 +62,14 @@ class App extends React.Component{
     state={
         games:[],
         showForm: false,
-        selectedGame:{}
+        selectedGame:{},
+        loading:true
     }
     componentDidMount(){
-        api.games.fetchAll()
-        .then(games=> this.setState({games: this.arr(games)}))
-        .then(console.log(this.state));
+            api.games.fetchAll()
+            .then(games=> this.setState({games: this.arr(games),loading:false}))
+            .then(console.log(this.state));
+       
     }
     arr(games){
         return _orderBy(games,["featured","title"],["desc","asc"]);
@@ -145,11 +147,32 @@ class App extends React.Component{
                                             selectedGame={this.state.selectedGame}
                                             />}
                 <br/>
-                <GameList 
+                {this.state.loading?
+                (
+                    <div className="ui error icon message">
+                    <i className="notched circle loading icon"/>
+                        <div className="content">
+                            <div className="header">
+                                Loading
+                            </div>
+                            <p>wait a second</p>
+                        </div>
+                    </div>
+
+                ):(
+                    <GameList 
+                    games= {this.state.games} 
+                    tog={this.tog}  
+                    editGame={this.selectGameFoeEdit}
+                    deleteGame={this.deleteGame}/>
+
+                )
+                }
+                {/* <GameList 
                 games= {this.state.games} 
                 tog={this.tog}  
                 editGame={this.selectGameFoeEdit}
-                deleteGame={this.deleteGame}/>
+                deleteGame={this.deleteGame}/> */}
             </div>
         )
     }
