@@ -1,8 +1,10 @@
 import React from "react";
-import GameList from "./GameList"
-import _orderBy from "lodash/orderBy" 
-import GameForm from "./GameForm"
+import GameList from "./GameList";
+import _orderBy from "lodash/orderBy"; 
+import GameForm from "./GameForm";
 import NavBar from "./navigation";
+import api from "../api";
+import find from "lodash/find";
 
 const publishers=[
     {
@@ -63,7 +65,9 @@ class App extends React.Component{
         selectedGame:{}
     }
     componentDidMount(){
-        this.setState({games:this.arr(games)});
+        api.games.fetchAll()
+        .then(games=> this.setState({games: this.arr(games)}))
+        .then(console.log(this.state));
     }
     arr(games){
         return _orderBy(games,["featured","title"],["desc","asc"]);
@@ -74,15 +78,18 @@ class App extends React.Component{
         //     return game;
         // });
         //console.log(newGames);
-        this.setState({
-            games : this.arr(this.state.games.map(
-                g=>{
-                    if(g._id===gameId) 
-                        return {...g,featured: !g.featured};
-                    return g;
-                }
-            ))
-            });
+        const game=find(this.state.games, {_id: gameId});
+        this.update({...game, featured: !game.featured})
+
+        // this.setState({
+        //     games : this.arr(this.state.games.map(
+        //         g=>{
+        //             if(g._id===gameId) 
+        //                 return {...g,featured: !g.featured};
+        //             return g;
+        //         }
+        //     ))
+        //     });
         //alert(gameId);
     }
     showForm=()=>{
@@ -92,25 +99,33 @@ class App extends React.Component{
     hideForm=()=>{
         this.setState({showForm: false,selectedGame:{}});
     }
-    submit= data =>{
-        if(!data._id)
-        this.addData(data);
-        else
-        this.update(data);
-        
-    }
-    update=data=>{
-        this.setState({games: this.state.games.map(item=> item._id===data._id?data:item),showForm:false});
-    }
-    deleteGame= data =>{
-        this.setState({games: this.state.games.filter(item => item._id!==data._id)})
-    }
-    addData= data =>{
-        this.setState({
-            games:this.arr([...this.state.games,{...data,_id:this.state.games.length+1}]),
+    submit= data =>
+        !data._id?
+        this.addData(data)
+        :
+        this.update(data)
+    
+    update=data=>
+        api.games.update(data).
+        then(game=> this.setState({
+            games: this.arr(this.state.games.map(item=> item._id===game._id?game:item)),
             showForm: false
-        });
+        }))
+        //this.setState({games: this.state.games.map(item=> item._id===data._id?data:item),showForm:false});
+    
+    deleteGame= data =>{
+        api.games.delete(data).then(()=>{
+            this.setState({games: this.state.games.filter(item => item._id !== data._id)})
+        })
+        //this.setState({games: this.state.games.filter(item => item._id!==data._id)})
     }
+    addData= data =>
+        api.games.createGame(data)
+        .then(game => this.setState({ 
+            games: this.arr([...this.state.games, game]),
+            showForm: false
+        }))
+    
     selectGameFoeEdit = game =>{
         this.setState({
             showForm: true,

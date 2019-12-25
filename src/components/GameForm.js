@@ -33,7 +33,6 @@ import InLineMessege from "./InlineErrorMessege";
 //     }
 // ]
 var initalData={
-    id:null,
     title:'',
     description:"",
     price:0,
@@ -47,6 +46,7 @@ var initalData={
 class GameForm extends React.Component{
     state={
         data:initalData,
+        loading:false,
         err:{}        
     }
     componentDidMount(){
@@ -75,13 +75,21 @@ class GameForm extends React.Component{
         return error;
     }
     EventHandler = e =>{
+        this.setState({loading:true});
         e.preventDefault();
         const err=this.validate(this.state.data);
-        this.setState({err})
-        if(Object.keys(err).length===0){
-            //console.log(this.state.data);
-            this.props.submit(this.state.data);
-        }
+        //const err={};
+        
+        
+            if(Object.keys(err).length===0){
+                //console.log(this.state.data);
+                this.props.submit(this.state.data)
+                .catch(err=> this.setState({err: err.response.data.errors,loading : false}));
+            }
+            else
+            this.setState({err:err,loading:false})
+        
+        
         //console.log(this.state);
     }
 
@@ -115,9 +123,9 @@ class GameForm extends React.Component{
     }
     render()
     {
-        const {data,err} =this.state;
+        const {data,err,loading} =this.state;
         return(
-            <form className="ui form" onSubmit={this.EventHandler}>
+            <form className={ loading? "ui form loading" : "ui form" } onSubmit={this.EventHandler}>
                 <div className="ui grid">
                     <div className="twelve wide column">
                                     <div className={err.name===""|| err.name===undefined?("field"):("error field")}>
