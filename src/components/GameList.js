@@ -5,7 +5,7 @@ import Message from "./message"
 
 
 
-const GameList =({games, tog, deleteGame})=>(
+const GameList =({games, tog, deleteGame, user})=>(
     <div >
         {
             games.length === 0 ?
@@ -16,7 +16,7 @@ const GameList =({games, tog, deleteGame})=>(
             (
                 <div className="ui cards four" >
                     {
-                        games.map(game=><GameCard game={game} key={game._id} tog={tog} deleteGame={deleteGame}/>)
+                        games.map(game=><GameCard game={game} user={user} key={game._id} tog={tog} deleteGame={deleteGame}/>)
                     }
                 </div> 
             )
@@ -34,7 +34,11 @@ GameList.defaultProps={
     games:[],
     tog:function(){console.log("error")},
     editGame:PropTypes.func.isRequired,
-    deleteGame:PropTypes.func.isRequired
+    deleteGame:PropTypes.func.isRequired,
+    user: PropTypes.shape({
+        token: PropTypes.string,
+        role: PropTypes.string.isRequired
+    }).isRequired
 }
 
 export default GameList;

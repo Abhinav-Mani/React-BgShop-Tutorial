@@ -4,7 +4,8 @@ import _orderBy from "lodash/orderBy";
 import GameForm from "./GameForm";
 import api from "../api";
 import find from "lodash/find";
-import { Route, Redirect } from "react-router-dom";
+import AdminRoute from "./AdminRoute";
+import PropTypes from "prop-types"
 
 const publishers=[
     {
@@ -137,31 +138,25 @@ class GamesPage extends React.Component{
     render(){
         return(
             <div className="ui container" >
-                { this.props.user.role==="admin"?
-                    (
-                        <div>
-                            <Route path="/games/new" render={()=>(
-                                <GameForm 
-                                publishers={publishers}
-                                submit={this.submit}
-                                selectedGame={{ }}
-                                />
-                            )}/>
-                            <Route path="/games/edit/:_id" 
-                            render={(props)=>(
-                                <GameForm 
-                                publishers={publishers}
-                                submit={this.submit}
-                                selectedGame={find(this.state.games,{_id: props.match.params._id }) ||{ }}
-                                />
-                            )}/>
-                        </div>
-                    ):
-                    (
-                        <Route path="/games/*" render={()=><Redirect to="/games"/>}/>
-                    )
-                }
                 
+                <AdminRoute path="/games/new" 
+                user={this.props.user}
+                render={()=>(
+                    <GameForm 
+                    publishers={publishers}
+                    submit={this.submit}
+                    selectedGame={{ }}
+                    />
+                )}/>
+                <AdminRoute path="/games/edit/:_id"
+                user={this.props.user} 
+                render={(props)=>(
+                    <GameForm 
+                    publishers={publishers}
+                    submit={this.submit}
+                    selectedGame={find(this.state.games,{_id: props.match.params._id }) ||{ }}
+                    />
+                )}/>
                 
                 {this.state.loading?
                 (
@@ -179,7 +174,8 @@ class GamesPage extends React.Component{
                     <GameList 
                     games= {this.state.games} 
                     tog={this.tog}  
-                    deleteGame={this.deleteGame}/>
+                    deleteGame={this.deleteGame}
+                    user={this.props.user}/>
 
                 )
                 }
@@ -191,6 +187,13 @@ class GamesPage extends React.Component{
             </div>
         )
     }
+}
+
+GamesPage.propTypes={
+    user: PropTypes.shape({
+        token: PropTypes.string,
+        role: PropTypes.string.isRequired
+    }).isRequired
 }
 
 export default GamesPage;
