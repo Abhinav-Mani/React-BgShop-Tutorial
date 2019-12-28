@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import Price from "./Price";
 import Featured from "./featured"
+import { Link } from "react-router-dom";
 class GameCard extends React.Component{
     state={
         confirm:false
@@ -20,7 +21,7 @@ class GameCard extends React.Component{
             <img src={game.image }></img>
         </div>
         <div className="content">
-        <a className="header">{ game.title }</a>
+        <Link to={`/game/${game._id}`} className="header">{ game.title }</Link>
             <div className="meata">
                 <i className="icon users"></i>{ game.player } &nbsp;
                 <i className="icon wait"></i>{ game.time } min
@@ -36,7 +37,7 @@ class GameCard extends React.Component{
 
                         ):(
                             <div className="ui two buttons">
-                            <a className="ui basic green button" onClick={()=>editGame(game)}><i className="ui icon edit"></i></a>
+                            <Link className="ui basic green button" to={`/games/edit/${game._id}`}><i className="ui icon edit"></i></Link>
                             <a className="ui basic red button" onClick={this.showconfirmaton}><i className="ui icon trash"></i></a>
                             </div>
                         )
@@ -64,7 +65,6 @@ GameCard.propTypes={
         title: PropTypes.string.isRequired,
         featured: PropTypes.bool.isRequired
     }).isRequired,
-    editGame:PropTypes.func.isRequired,
     deleteGame:PropTypes.func.isRequired
 }
 

@@ -5,7 +5,7 @@ import Message from "./message"
 
 
 
-const GameList =({games, tog, editGame, deleteGame})=>(
+const GameList =({games, tog, deleteGame})=>(
     <div >
         {
             games.length === 0 ?
@@ -16,7 +16,7 @@ const GameList =({games, tog, editGame, deleteGame})=>(
             (
                 <div className="ui cards four" >
                     {
-                        games.map(game=><GameCard game={game} key={game._id} tog={tog} editGame={editGame} deleteGame={deleteGame}/>)
+                        games.map(game=><GameCard game={game} key={game._id} tog={tog} deleteGame={deleteGame}/>)
                     }
                 </div> 
             )

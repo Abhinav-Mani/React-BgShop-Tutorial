@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import ReactImageFallback from "react-image-fallback";
 import InLineMessege from "./InlineErrorMessege";
+import { Link } from "react-router-dom";
 
 // const tags=[
 //     {
@@ -289,7 +290,7 @@ class GameForm extends React.Component{
                 <div className="ui fluid buttons">
                     <button type="submit" className="ui primary button"> Submit </button>
                     <div className="or"></div>
-                    <button type="submit" className="ui button" onClick={this.props.hide}> Cancel! </button>
+                    <Link type="submit" className="ui button" to="/games"> Cancel! </Link>
                 </div>
             </form>
         )
