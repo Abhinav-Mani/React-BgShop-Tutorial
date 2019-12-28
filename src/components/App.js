@@ -18,7 +18,8 @@ const Authorization = ( token= null )=>{
 class App extends React.Component{
     state={
         user:{
-            token: ""
+            token: "",
+            role: "user"
         },
         message:""
     }
@@ -49,10 +50,10 @@ class App extends React.Component{
                     {this.state.message}
                 </div>}
                 <Route path="/" exact component={Home} />
-                <Route path="/games" component={GamesPage} />
-                <Route path="/game/:_id" component={ShowGame}/>
-                <Route path="/SignUP" render={(props)=><SignUP setMessage={this.setMessage} {...props}/>}/>
-                <Route path="/SignIn" render={(props)=><SignIn login={this.login} {...props} />}/>
+                <Route path="/games" render={(props)=><GamesPage user={this.state.user}/>} />
+                <Route path="/game/:_id" exact component={ShowGame}/>
+                <Route path="/SignUP" exact render={(props)=><SignUP setMessage={this.setMessage} {...props}/>}/>
+                <Route path="/SignIn" exact render={(props)=><SignIn login={this.login} {...props} />}/>
                 
             </div>
         );

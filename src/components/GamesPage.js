@@ -4,7 +4,7 @@ import _orderBy from "lodash/orderBy";
 import GameForm from "./GameForm";
 import api from "../api";
 import find from "lodash/find";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 
 const publishers=[
     {
@@ -137,23 +137,32 @@ class GamesPage extends React.Component{
     render(){
         return(
             <div className="ui container" >
-                <Route path="/games/new" render={()=>(
-                    <GameForm 
-                    publishers={publishers}
-                    submit={this.submit}
-                    selectedGame={{ }}
-                    />
-                )}/>
-                <Route path="/games/edit/:_id" 
-                render={(props)=>(
-                    <GameForm 
-                    publishers={publishers}
-                    submit={this.submit}
-                    selectedGame={find(this.state.games,{_id: props.match.params._id }) ||{ }}
-                    />
-                )}/>
-                {this.state.showForm&&
-                <br/>}
+                { this.props.user.role==="admin"?
+                    (
+                        <div>
+                            <Route path="/games/new" render={()=>(
+                                <GameForm 
+                                publishers={publishers}
+                                submit={this.submit}
+                                selectedGame={{ }}
+                                />
+                            )}/>
+                            <Route path="/games/edit/:_id" 
+                            render={(props)=>(
+                                <GameForm 
+                                publishers={publishers}
+                                submit={this.submit}
+                                selectedGame={find(this.state.games,{_id: props.match.params._id }) ||{ }}
+                                />
+                            )}/>
+                        </div>
+                    ):
+                    (
+                        <Route path="/games/*" render={()=><Redirect to="/games"/>}/>
+                    )
+                }
+                
+                
                 {this.state.loading?
                 (
                     <div className="ui error icon message">
